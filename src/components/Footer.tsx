@@ -21,7 +21,6 @@ export const Footer = ({
 
       <Filter todoStatus={todoStatus} setTodoStatus={setTodoStatus} />
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

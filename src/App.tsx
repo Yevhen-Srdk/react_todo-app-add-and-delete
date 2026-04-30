@@ -8,6 +8,9 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
+import { Errors } from './types/ErrorsEnum';
+
+const DELAY = 3000;
 
 export const App: React.FC = () => {
   const [todoStatus, setTodoStatus] = useState<boolean | null>(null);
@@ -28,7 +31,7 @@ export const App: React.FC = () => {
 
     getTodos()
       .then(todosFromServer => setTodos(todosFromServer))
-      .catch(() => setError('Unable to load todos'));
+      .catch(() => setError(Errors.unableToLoadTodosError));
   }, []);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    const timer = setTimeout(() => setError(''), 3000);
+    const timer = setTimeout(() => setError(Errors.clearErrors), 3000);
 
     return () => clearTimeout(timer);
   }, [error]);
@@ -57,7 +60,7 @@ export const App: React.FC = () => {
 
     if (trimmedTitle.length === 0) {
       setIsSubmitting(false);
-      setError('Title should not be empty');
+      setError(Errors.emptyTitleError);
 
       return;
     }
@@ -76,7 +79,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setError('Unable to add a todo');
+        setError(Errors.unableToAddTodoError);
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -93,7 +96,7 @@ export const App: React.FC = () => {
           return currentTodos.filter(todo => todo.id !== todoId);
         }),
       )
-      .catch(() => setError('Unable to delete a todo'))
+      .catch(() => setError(Errors.unableToDeleteATodoError))
       .finally(() => {
         setLoadingIds(prev => prev.filter(id => id !== todoId));
         inputFocusRef.current?.focus();
@@ -101,9 +104,21 @@ export const App: React.FC = () => {
   };
 
   const handleClearCompletedTodo = () => {
-    const completedTodo = todos.filter(todo => todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
 
-    completedTodo.forEach(todo => handleDeleteTodo(todo.id));
+    setLoadingIds(prev => [...prev, ...completedIds]);
+
+    Promise.all(
+      completedIds.map(id =>
+        deleteTodo(id)
+          .then(() => setTodos(prev => prev.filter(todo => todo.id !== id)))
+          .catch(() => setError(Errors.unableToDeleteATodoError))
+          .finally(() =>
+            setLoadingIds(prev => prev.filter(loadingId => loadingId !== id)),
+          ),
+      ),
+    ).finally(() => inputFocusRef.current?.focus());
   };
 
   const filteredTodos = todos.filter(todo => {
