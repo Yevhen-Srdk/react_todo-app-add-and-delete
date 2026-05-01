@@ -1,8 +1,9 @@
 import classNames from 'classnames';
+import { FilterValues } from '../types/FilterValuesEnum';
 
 type Props = {
-  todoStatus: boolean | null;
-  setTodoStatus: (value: boolean | null) => void;
+  todoStatus: FilterValues;
+  setTodoStatus: (value: FilterValues) => void;
 };
 
 export const Filter = ({ todoStatus, setTodoStatus }: Props) => {
@@ -11,10 +12,10 @@ export const Filter = ({ todoStatus, setTodoStatus }: Props) => {
       <a
         href="#/"
         className={classNames('filter__link', {
-          selected: todoStatus === null,
+          selected: todoStatus === FilterValues.All,
         })}
         data-cy="FilterLinkAll"
-        onClick={() => setTodoStatus(null)}
+        onClick={() => setTodoStatus(FilterValues.All)}
       >
         All
       </a>
@@ -22,10 +23,10 @@ export const Filter = ({ todoStatus, setTodoStatus }: Props) => {
       <a
         href="#/active"
         className={classNames('filter__link', {
-          selected: todoStatus === false,
+          selected: todoStatus === FilterValues.Active,
         })}
         data-cy="FilterLinkActive"
-        onClick={() => setTodoStatus(false)}
+        onClick={() => setTodoStatus(FilterValues.Active)}
       >
         Active
       </a>
@@ -33,10 +34,10 @@ export const Filter = ({ todoStatus, setTodoStatus }: Props) => {
       <a
         href="#/completed"
         className={classNames('filter__link', {
-          selected: todoStatus === true,
+          selected: todoStatus === FilterValues.Completed,
         })}
         data-cy="FilterLinkCompleted"
-        onClick={() => setTodoStatus(true)}
+        onClick={() => setTodoStatus(FilterValues.Completed)}
       >
         Completed
       </a>

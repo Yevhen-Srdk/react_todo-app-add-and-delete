@@ -1,11 +1,12 @@
 import { Todo } from '../types/Todo';
 import { TodosCounter } from './TodosCounter';
 import { Filter } from './Filter';
+import { FilterValues } from '../types/FilterValuesEnum';
 
 type Props = {
   todos: Todo[];
-  todoStatus: boolean | null;
-  setTodoStatus: (value: boolean | null) => void;
+  todoStatus: FilterValues;
+  setTodoStatus: (value: FilterValues) => void;
   clearCompletedTodo: () => void;
 };
 

@@ -9,11 +9,10 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Errors } from './types/ErrorsEnum';
-
-const DELAY = 3000;
+import { FilterValues } from './types/FilterValuesEnum';
 
 export const App: React.FC = () => {
-  const [todoStatus, setTodoStatus] = useState<boolean | null>(null);
+  const [todoStatus, setTodoStatus] = useState<FilterValues>(FilterValues.All);
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
@@ -122,11 +121,15 @@ export const App: React.FC = () => {
   };
 
   const filteredTodos = todos.filter(todo => {
-    if (todoStatus === null) {
+    if (todoStatus === FilterValues.All) {
       return true;
     }
 
-    return todo.completed === todoStatus;
+    if (todoStatus === FilterValues.Active) {
+      return !todo.completed;
+    }
+
+    return todo.completed;
   });
 
   if (!USER_ID) {
